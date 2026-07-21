@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "YouTube AI Studio"
+version = "1.0.0"
+id = "artifacts/youtube-ai-studio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22065
+
+[services.development]
+run = "pnpm --filter @workspace/youtube-ai-studio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/youtube-ai-studio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/youtube-ai-studio/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22065"
+BASE_PATH = "/"

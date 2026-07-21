@@ -1,22 +1,41 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: YouTube AI Studio API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: dashboard
+    description: Dashboard overview
+  - name: research
+    description: AI Research Engine
+  - name: content
+    description: AI Content Studio
+  - name: videos
+    description: Video management
+  - name: pipeline
+    description: AI Video Pipeline
+  - name: youtube
+    description: YouTube Studio
+  - name: automation
+    description: AI Automation Center
+  - name: api-settings
+    description: API Configuration
+  - name: drafts
+    description: Draft Queue
+  - name: schedules
+    description: Scheduled Videos
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +43,880 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ── DASHBOARD ──
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/trending-topics:
+    get:
+      operationId: getTrendingTopics
+      tags: [dashboard]
+      summary: Get trending topics
+      responses:
+        "200":
+          description: List of trending topics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TrendingTopic"
+
+  /dashboard/trending-keywords:
+    get:
+      operationId: getTrendingKeywords
+      tags: [dashboard]
+      summary: Get trending keywords
+      responses:
+        "200":
+          description: List of trending keywords
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TrendingKeyword"
+
+  /dashboard/opportunities:
+    get:
+      operationId: getTodaysOpportunities
+      tags: [dashboard]
+      summary: Get today's content opportunities
+      responses:
+        "200":
+          description: List of opportunities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContentOpportunity"
+
+  /dashboard/ai-suggestions:
+    get:
+      operationId: getAiSuggestions
+      tags: [dashboard]
+      summary: Get AI-generated content suggestions
+      responses:
+        "200":
+          description: List of AI suggestions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AiSuggestion"
+
+  # ── RESEARCH ENGINE ──
+  /research:
+    get:
+      operationId: listResearch
+      tags: [research]
+      summary: List all research jobs
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of research jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Research"
+    post:
+      operationId: createResearch
+      tags: [research]
+      summary: Start a research analysis on a topic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResearchInput"
+      responses:
+        "201":
+          description: Research job created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Research"
+
+  /research/{id}:
+    get:
+      operationId: getResearch
+      tags: [research]
+      summary: Get a research job by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Research job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Research"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteResearch
+      tags: [research]
+      summary: Delete a research job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ── CONTENT STUDIO ──
+  /content:
+    get:
+      operationId: listContent
+      tags: [content]
+      summary: List generated content
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of content
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Content"
+    post:
+      operationId: createContent
+      tags: [content]
+      summary: Generate AI content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContentInput"
+      responses:
+        "201":
+          description: Content created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Content"
+
+  /content/{id}:
+    get:
+      operationId: getContent
+      tags: [content]
+      summary: Get content by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Content"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateContent
+      tags: [content]
+      summary: Update content
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContentUpdate"
+      responses:
+        "200":
+          description: Updated content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Content"
+    delete:
+      operationId: deleteContent
+      tags: [content]
+      summary: Delete content
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ── VIDEOS ──
+  /videos:
+    get:
+      operationId: listVideos
+      tags: [videos]
+      summary: List videos
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: List of videos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Video"
+    post:
+      operationId: createVideo
+      tags: [videos]
+      summary: Create a video record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoInput"
+      responses:
+        "201":
+          description: Video created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+
+  /videos/{id}:
+    get:
+      operationId: getVideo
+      tags: [videos]
+      summary: Get video by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Video
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateVideo
+      tags: [videos]
+      summary: Update video
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoUpdate"
+      responses:
+        "200":
+          description: Updated video
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Video"
+    delete:
+      operationId: deleteVideo
+      tags: [videos]
+      summary: Delete video
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ── PIPELINE ──
+  /pipeline:
+    get:
+      operationId: listPipeline
+      tags: [pipeline]
+      summary: List pipeline jobs
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: Pipeline jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PipelineJob"
+    post:
+      operationId: createPipelineJob
+      tags: [pipeline]
+      summary: Start a new pipeline job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PipelineJobInput"
+      responses:
+        "201":
+          description: Pipeline job created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PipelineJob"
+
+  /pipeline/{id}:
+    get:
+      operationId: getPipelineJob
+      tags: [pipeline]
+      summary: Get pipeline job by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Pipeline job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PipelineJob"
+        "404":
+          description: Not found
+    patch:
+      operationId: updatePipelineJob
+      tags: [pipeline]
+      summary: Update pipeline job status/step
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PipelineJobUpdate"
+      responses:
+        "200":
+          description: Updated pipeline job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PipelineJob"
+
+  # ── YOUTUBE STUDIO ──
+  /youtube/channel:
+    get:
+      operationId: getChannelInfo
+      tags: [youtube]
+      summary: Get YouTube channel info and health
+      responses:
+        "200":
+          description: Channel info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChannelInfo"
+
+  /youtube/analytics:
+    get:
+      operationId: getYoutubeAnalytics
+      tags: [youtube]
+      summary: Get channel analytics overview
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: Analytics data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalyticsOverview"
+
+  /youtube/competitors:
+    get:
+      operationId: listCompetitors
+      tags: [youtube]
+      summary: List competitor channels
+      responses:
+        "200":
+          description: Competitors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Competitor"
+    post:
+      operationId: addCompetitor
+      tags: [youtube]
+      summary: Add a competitor channel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompetitorInput"
+      responses:
+        "201":
+          description: Competitor added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Competitor"
+
+  /youtube/competitors/{id}:
+    delete:
+      operationId: removeCompetitor
+      tags: [youtube]
+      summary: Remove a competitor
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Removed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /youtube/keywords:
+    get:
+      operationId: listKeywords
+      tags: [youtube]
+      summary: List tracked keywords
+      responses:
+        "200":
+          description: Keywords
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Keyword"
+    post:
+      operationId: trackKeyword
+      tags: [youtube]
+      summary: Track a new keyword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeywordInput"
+      responses:
+        "201":
+          description: Keyword tracked
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Keyword"
+
+  # ── DRAFTS ──
+  /drafts:
+    get:
+      operationId: listDrafts
+      tags: [drafts]
+      summary: List draft videos
+      responses:
+        "200":
+          description: Drafts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Draft"
+    post:
+      operationId: createDraft
+      tags: [drafts]
+      summary: Create a draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DraftInput"
+      responses:
+        "201":
+          description: Draft created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Draft"
+
+  /drafts/{id}:
+    patch:
+      operationId: updateDraft
+      tags: [drafts]
+      summary: Update a draft
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DraftUpdate"
+      responses:
+        "200":
+          description: Updated draft
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Draft"
+    delete:
+      operationId: deleteDraft
+      tags: [drafts]
+      summary: Delete a draft
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ── SCHEDULES ──
+  /schedules:
+    get:
+      operationId: listSchedules
+      tags: [schedules]
+      summary: List scheduled videos
+      responses:
+        "200":
+          description: Schedules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Schedule"
+    post:
+      operationId: createSchedule
+      tags: [schedules]
+      summary: Schedule a video
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleInput"
+      responses:
+        "201":
+          description: Schedule created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+
+  /schedules/{id}:
+    patch:
+      operationId: updateSchedule
+      tags: [schedules]
+      summary: Update a schedule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScheduleUpdate"
+      responses:
+        "200":
+          description: Updated schedule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Schedule"
+    delete:
+      operationId: deleteSchedule
+      tags: [schedules]
+      summary: Delete a schedule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  # ── AUTOMATION ──
+  /automation/jobs:
+    get:
+      operationId: listAutomationJobs
+      tags: [automation]
+      summary: List automation jobs
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: ["string", "null"]
+        - name: status
+          in: query
+          schema:
+            type: ["string", "null"]
+      responses:
+        "200":
+          description: Automation jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AutomationJob"
+    post:
+      operationId: createAutomationJob
+      tags: [automation]
+      summary: Create an automation job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AutomationJobInput"
+      responses:
+        "201":
+          description: Automation job created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AutomationJob"
+
+  /automation/jobs/{id}:
+    get:
+      operationId: getAutomationJob
+      tags: [automation]
+      summary: Get automation job by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Automation job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AutomationJob"
+    patch:
+      operationId: updateAutomationJob
+      tags: [automation]
+      summary: Update automation job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AutomationJobUpdate"
+      responses:
+        "200":
+          description: Updated job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AutomationJob"
+    delete:
+      operationId: deleteAutomationJob
+      tags: [automation]
+      summary: Delete automation job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /automation/logs:
+    get:
+      operationId: getAutomationLogs
+      tags: [automation]
+      summary: Get automation logs
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: ["integer", "null"]
+      responses:
+        "200":
+          description: Logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AutomationLog"
+
+  # ── API SETTINGS ──
+  /api-settings:
+    get:
+      operationId: listApiSettings
+      tags: [api-settings]
+      summary: List all API settings
+      responses:
+        "200":
+          description: API settings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiSetting"
+
+  /api-settings/{provider}:
+    put:
+      operationId: upsertApiSetting
+      tags: [api-settings]
+      summary: Create or update API setting for a provider
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ApiSettingInput"
+      responses:
+        "200":
+          description: API setting saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiSetting"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +924,683 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    DeleteResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+      required: [success]
+
+    # ── DASHBOARD SCHEMAS ──
+    DashboardSummary:
+      type: object
+      properties:
+        totalVideos:
+          type: integer
+        totalViews:
+          type: integer
+        totalSubscribers:
+          type: integer
+        totalRevenue:
+          type: number
+        contentScore:
+          type: integer
+        videosThisWeek:
+          type: integer
+        avgViewsPerVideo:
+          type: integer
+        growthRate:
+          type: number
+      required: [totalVideos, totalViews, totalSubscribers, totalRevenue, contentScore, videosThisWeek, avgViewsPerVideo, growthRate]
+
+    TrendingTopic:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        score:
+          type: number
+        category:
+          type: string
+        growth:
+          type: number
+        searchVolume:
+          type: integer
+        createdAt:
+          type: string
+      required: [id, title, score, category, growth, searchVolume, createdAt]
+
+    TrendingKeyword:
+      type: object
+      properties:
+        id:
+          type: integer
+        keyword:
+          type: string
+        volume:
+          type: integer
+        competition:
+          type: string
+        trend:
+          type: number
+        cpc:
+          type: number
+      required: [id, keyword, volume, competition, trend, cpc]
+
+    ContentOpportunity:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+        estimatedViews:
+          type: integer
+        difficulty:
+          type: string
+      required: [id, title, description, priority, estimatedViews, difficulty]
+
+    AiSuggestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        reason:
+          type: string
+        type:
+          type: string
+        score:
+          type: number
+      required: [id, title, reason, type, score]
+
+    # ── RESEARCH SCHEMAS ──
+    Research:
+      type: object
+      properties:
+        id:
+          type: integer
+        topic:
+          type: string
+        status:
+          type: string
+        shouldCreate:
+          type: ["boolean", "null"]
+        reasoning:
+          type: ["string", "null"]
+        topicAnalysis:
+          type: ["string", "null"]
+        audienceAnalysis:
+          type: ["string", "null"]
+        keywordAnalysis:
+          type: ["string", "null"]
+        relatedQuestions:
+          type: ["string", "null"]
+        competitorResearch:
+          type: ["string", "null"]
+        searchIntent:
+          type: ["string", "null"]
+        evergreenPotential:
+          type: ["number", "null"]
+        viralPotential:
+          type: ["number", "null"]
+        contentGapAnalysis:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, topic, status, createdAt, updatedAt]
+
+    ResearchInput:
+      type: object
+      properties:
+        topic:
+          type: string
+          minLength: 2
+      required: [topic]
+
+    # ── CONTENT SCHEMAS ──
+    Content:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+        topic:
+          type: string
+        hook:
+          type: ["string", "null"]
+        outline:
+          type: ["string", "null"]
+        storyFlow:
+          type: ["string", "null"]
+        script:
+          type: ["string", "null"]
+        cta:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        seoTitle:
+          type: ["string", "null"]
+        tags:
+          type: ["string", "null"]
+        hashtags:
+          type: ["string", "null"]
+        thumbnailPrompt:
+          type: ["string", "null"]
+        imagePrompt:
+          type: ["string", "null"]
+        scenePrompt:
+          type: ["string", "null"]
+        status:
+          type: string
+        researchId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, title, type, topic, status, createdAt, updatedAt]
+
+    ContentInput:
+      type: object
+      properties:
+        topic:
+          type: string
+          minLength: 2
+        type:
+          type: string
+        researchId:
+          type: ["integer", "null"]
+      required: [topic, type]
+
+    ContentUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        hook:
+          type: string
+        outline:
+          type: string
+        storyFlow:
+          type: string
+        script:
+          type: string
+        cta:
+          type: string
+        description:
+          type: string
+        seoTitle:
+          type: string
+        tags:
+          type: string
+        hashtags:
+          type: string
+        thumbnailPrompt:
+          type: string
+        imagePrompt:
+          type: string
+        scenePrompt:
+          type: string
+        status:
+          type: string
+
+    # ── VIDEO SCHEMAS ──
+    Video:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        youtubeId:
+          type: ["string", "null"]
+        thumbnailUrl:
+          type: ["string", "null"]
+        views:
+          type: integer
+        likes:
+          type: integer
+        comments:
+          type: integer
+        duration:
+          type: ["integer", "null"]
+        publishedAt:
+          type: ["string", "null"]
+        contentId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+      required: [id, title, type, status, views, likes, comments, createdAt]
+
+    VideoInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 2
+        type:
+          type: string
+        contentId:
+          type: ["integer", "null"]
+      required: [title, type]
+
+    VideoUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: string
+        youtubeId:
+          type: string
+        thumbnailUrl:
+          type: string
+        views:
+          type: integer
+        likes:
+          type: integer
+        comments:
+          type: integer
+        duration:
+          type: integer
+        publishedAt:
+          type: string
+
+    # ── PIPELINE SCHEMAS ──
+    PipelineJob:
+      type: object
+      properties:
+        id:
+          type: integer
+        topic:
+          type: string
+        currentStep:
+          type: string
+        status:
+          type: string
+        progress:
+          type: integer
+        steps:
+          type: string
+        videoId:
+          type: ["integer", "null"]
+        contentId:
+          type: ["integer", "null"]
+        errorMessage:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, topic, currentStep, status, progress, steps, createdAt, updatedAt]
+
+    PipelineJobInput:
+      type: object
+      properties:
+        topic:
+          type: string
+          minLength: 2
+        videoType:
+          type: string
+      required: [topic, videoType]
+
+    PipelineJobUpdate:
+      type: object
+      properties:
+        currentStep:
+          type: string
+        status:
+          type: string
+        progress:
+          type: integer
+        errorMessage:
+          type: string
+
+    # ── YOUTUBE STUDIO SCHEMAS ──
+    ChannelInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+        channelName:
+          type: string
+        channelId:
+          type: ["string", "null"]
+        subscribers:
+          type: integer
+        totalViews:
+          type: integer
+        totalVideos:
+          type: integer
+        healthScore:
+          type: integer
+        monthlyRevenue:
+          type: number
+        avgViewDuration:
+          type: number
+        clickThroughRate:
+          type: number
+        updatedAt:
+          type: string
+      required: [id, channelName, subscribers, totalViews, totalVideos, healthScore, monthlyRevenue, avgViewDuration, clickThroughRate, updatedAt]
+
+    AnalyticsOverview:
+      type: object
+      properties:
+        period:
+          type: string
+        views:
+          type: integer
+        watchTime:
+          type: number
+        subscribers:
+          type: integer
+        revenue:
+          type: number
+        impressions:
+          type: integer
+        ctr:
+          type: number
+        avgViewDuration:
+          type: number
+        topVideos:
+          type: array
+          items:
+            $ref: "#/components/schemas/Video"
+        dailyStats:
+          type: array
+          items:
+            $ref: "#/components/schemas/DailyStat"
+      required: [period, views, watchTime, subscribers, revenue, impressions, ctr, avgViewDuration, topVideos, dailyStats]
+
+    DailyStat:
+      type: object
+      properties:
+        date:
+          type: string
+        views:
+          type: integer
+        watchTime:
+          type: number
+        revenue:
+          type: number
+        subscribers:
+          type: integer
+      required: [date, views, watchTime, revenue, subscribers]
+
+    Competitor:
+      type: object
+      properties:
+        id:
+          type: integer
+        channelName:
+          type: string
+        channelUrl:
+          type: ["string", "null"]
+        subscribers:
+          type: integer
+        totalVideos:
+          type: integer
+        avgViews:
+          type: integer
+        uploadFrequency:
+          type: ["string", "null"]
+        niche:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required: [id, channelName, subscribers, totalVideos, avgViews, createdAt]
+
+    CompetitorInput:
+      type: object
+      properties:
+        channelName:
+          type: string
+          minLength: 2
+        channelUrl:
+          type: ["string", "null"]
+        niche:
+          type: ["string", "null"]
+      required: [channelName]
+
+    Keyword:
+      type: object
+      properties:
+        id:
+          type: integer
+        keyword:
+          type: string
+        volume:
+          type: integer
+        competition:
+          type: string
+        cpc:
+          type: number
+        trend:
+          type: number
+        tracked:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, keyword, volume, competition, cpc, trend, tracked, createdAt]
+
+    KeywordInput:
+      type: object
+      properties:
+        keyword:
+          type: string
+          minLength: 1
+      required: [keyword]
+
+    # ── DRAFT SCHEMAS ──
+    Draft:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+        notes:
+          type: ["string", "null"]
+        contentId:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, title, type, createdAt, updatedAt]
+
+    DraftInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 2
+        type:
+          type: string
+        notes:
+          type: ["string", "null"]
+        contentId:
+          type: ["integer", "null"]
+      required: [title, type]
+
+    DraftUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        notes:
+          type: string
+
+    # ── SCHEDULE SCHEMAS ──
+    Schedule:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        scheduledAt:
+          type: string
+        status:
+          type: string
+        videoId:
+          type: ["integer", "null"]
+        contentId:
+          type: ["integer", "null"]
+        platform:
+          type: string
+        createdAt:
+          type: string
+      required: [id, title, scheduledAt, status, platform, createdAt]
+
+    ScheduleInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 2
+        scheduledAt:
+          type: string
+        videoId:
+          type: ["integer", "null"]
+        contentId:
+          type: ["integer", "null"]
+        platform:
+          type: string
+      required: [title, scheduledAt, platform]
+
+    ScheduleUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        scheduledAt:
+          type: string
+        status:
+          type: string
+        platform:
+          type: string
+
+    # ── AUTOMATION SCHEMAS ──
+    AutomationJob:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        frequency:
+          type: string
+        lastRun:
+          type: ["string", "null"]
+        nextRun:
+          type: ["string", "null"]
+        successCount:
+          type: integer
+        failureCount:
+          type: integer
+        config:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required: [id, name, type, status, frequency, successCount, failureCount, createdAt]
+
+    AutomationJobInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+        type:
+          type: string
+        frequency:
+          type: string
+        config:
+          type: ["string", "null"]
+      required: [name, type, frequency]
+
+    AutomationJobUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+        frequency:
+          type: string
+        config:
+          type: string
+
+    AutomationLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        jobId:
+          type: integer
+        jobName:
+          type: string
+        status:
+          type: string
+        message:
+          type: string
+        createdAt:
+          type: string
+      required: [id, jobId, jobName, status, message, createdAt]
+
+    # ── API SETTINGS SCHEMAS ──
+    ApiSetting:
+      type: object
+      properties:
+        id:
+          type: integer
+        provider:
+          type: string
+        label:
+          type: string
+        isConfigured:
+          type: boolean
+        description:
+          type: ["string", "null"]
+        updatedAt:
+          type: string
+      required: [id, provider, label, isConfigured, updatedAt]
+
+    ApiSettingInput:
+      type: object
+      properties:
+        apiKey:
+          type: string
+        label:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+      required: [apiKey]
